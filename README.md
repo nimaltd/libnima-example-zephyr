@@ -1,34 +1,28 @@
-# lib-installer-example-zephyr
+# libnima-example-zephyr
 
-A small library made to try [lib-installer](https://github.com/nimaltd/lib-installer) on, and a starting point for making your own library installable into a Zephyr or nRF Connect SDK application.
+A small library made to try [libNIMA](https://github.com/nimaltd/libNIMA) on, and a starting point for making your own library installable into a Zephyr or nRF Connect SDK application.
 
 It does one useful thing. `example_due()` says yes once every `CONFIG_EXAMPLE_PERIOD_MS` milliseconds and never blocks, so a loop can blink an LED, read a sensor or print a line on a rhythm without sleeping. `example_hello()` prints `CONFIG_EXAMPLE_GREETING`. Both settings are Kconfig symbols. Its `uptime` option adds `example_uptime()`, the time since start up in hours, minutes and seconds.
 
-It also uses what installer.yml gained in 2.0.0, 2.1.0 and 4.0.0, so you can see each of them work:
+It also uses what libnima.yml gained in 2.0.0, 2.1.0 and 4.0.0, so you can see each of them work:
 
 - **A file made once.** Its settings come in `example.conf`, made in your application's folder and yours from then on. No install writes over it.
 - **Lines of CMake by place.** Under `zephyr.project.cmake`, a line in your `CMakeLists.txt`, above `find_package(Zephyr)`, adds `example.conf` to the build. Under `zephyr.library.cmake`, one puts your application's folder on the library's include path.
 - **A setting of another symbol.** `PRINTK`, which `example_hello()` needs, is switched on as a default in the library's own Kconfig, while the library is on, from `zephyr.library.kconfig`. Your `prj.conf` gets only `CONFIG_EXAMPLE=y`, and a line of yours there wins.
 - **A setting for every build.** `BOOT_BANNER=n`, from `zephyr.library.conf`, goes into the library's own Kconfig fragment, `modules/example/zephyr/example.conf`, which Zephyr reads after `prj.conf`. So the first line printed is example's, whatever `prj.conf` says.
 - **Titles and notes.** Its lists are in groups under their titles, and a setting has a note. Both land in the files as comments, so whoever opens `prj.conf`, the library's Kconfig or a `CMakeLists.txt` sees why each line is there.
-- **A step it runs.** `make-id` makes `example_id.h`, this device's own ID, a random number. The installer shows what it runs and asks first. Its script, `tools/make_id.py`, comes into your application's folder as the library's own.
+- **A step it runs.** `make-id` makes `example_id.h`, this device's own ID, a random number. libNIMA shows what it runs and asks first. Its script, `tools/make_id.py`, comes into your application's folder as the library's own.
 
 ---
 
-## Try the installer with it
+## Try libNIMA with it
 
-Install the installer once:
-
-```bash
-pip install lib-installer
-```
-
-It needs lib-installer 4.0.0 or newer. `pip install --upgrade lib-installer` brings an older one up to date.
+Get libNIMA once per machine from [its releases page](https://github.com/nimaltd/libNIMA/releases/latest): the installer for Windows, macOS or Linux, which puts the `libnima` command on your PATH as well.
 
 Then, from your application's folder, the one holding `CMakeLists.txt` and `prj.conf`:
 
 ```bash
-lib-installer nimaltd/lib-installer-example-zephyr
+libnima nimaltd/libnima-example-zephyr
 ```
 
 Press Enter at its questions, and the library goes into `modules/example/` as a Zephyr module, `CMakeLists.txt` gets a block that adds it to the build, one that adds its Kconfig fragment and one that adds `example.conf`, `prj.conf` gets `CONFIG_EXAMPLE=y`, and `example.conf` is made. Last, it asks about its step:
@@ -100,13 +94,13 @@ Run the install command again, and the file is as you left it: the output says `
 **Look at what it wrote.** The lines of each place sit between two lines naming it, so you can find them, and the next install writes them again. Each group has its title above it, between two lines of stars:
 
 ```cmake
-# >>> lib-installer: example/before-zephyr >>>
-# From example's installer.yml, and written again on every install.
+# >>> libnima: example/before-zephyr >>>
+# From example's libnima.yml, and written again on every install.
 # ******************************************************************************
 # Your settings in example.conf, read after prj.conf
 # ******************************************************************************
 list(APPEND EXTRA_CONF_FILE "${CMAKE_CURRENT_SOURCE_DIR}/example.conf")
-# <<< lib-installer: example/before-zephyr <<<
+# <<< libnima: example/before-zephyr <<<
 ```
 
 The module's, `example/module`, are in `modules/example/zephyr/CMakeLists.txt`, and puts your application's folder on the library's include path, which is how `example.c` finds `example_id.h`.
@@ -134,7 +128,7 @@ CONFIG_BOOT_BANNER=n
 **Add a part, and take it out.** `--with uptime` adds `example_uptime.h` and `example_uptime.c` to the module. `--without uptime` takes them out again.
 
 ```bash
-lib-installer nimaltd/lib-installer-example-zephyr --with uptime
+libnima nimaltd/libnima-example-zephyr --with uptime
 ```
 
 ```c
@@ -144,28 +138,28 @@ example_uptime_t up = example_uptime();   /* up.hours, up.minutes, up.seconds */
 **Uninstall it.** Its blocks leave `CMakeLists.txt` and `prj.conf`, which are back as they were, and its files go, its fragment and `tools/make_id.py` with them. `example.conf` and `example_id.h` stay, since they are yours, and `example.conf` is no longer in the build. A setting of its you set yourself in `prj.conf` is named, since Zephyr stops on a symbol it no longer knows:
 
 ```bash
-lib-installer --uninstall example
+libnima --uninstall example
 ```
 
-**Without internet.** Download this repository as a zip, from the green **Code** button, **Download ZIP**, and give the installer the zip instead of the name:
+**Without internet.** Download this repository as a zip, from the green **Code** button, **Download ZIP**, and give libNIMA the zip instead of the name:
 
 ```bash
-lib-installer D:/Downloads/lib-installer-example-zephyr-main.zip
+libnima D:/Downloads/libnima-example-zephyr-main.zip
 ```
 
 ---
 
 ## Make your own library installable
 
-Copy [`installer.yml`](installer.yml) to the root of your library's repository, and change what is yours: its name, its description, its repository, its files and its settings. Every key the installer reads is in it, with a comment saying what it does; the ones this library has no use for are commented out. Only `name` and its `headers` or `sources` are required.
+Copy [`libnima.yml`](libnima.yml) to the root of your library's repository, and change what is yours: its name, its description, its repository, its files and its settings. Every key libNIMA reads is in it, with a comment saying what it does; the ones this library has no use for are commented out. Only `name` and its `headers` or `sources` are required.
 
 Then anyone installs your library with:
 
 ```bash
-lib-installer yourname/yourlibrary
+libnima yourname/yourlibrary
 ```
 
-Each entry under `zephyr.settings` becomes a Kconfig symbol the user sets, and your code reads it as `CONFIG_<name>`. `once` lists files for the application's own folder, and `run` the steps run after the install, with the script in [`tools/make_id.py`](tools/make_id.py). What the library writes sits under where it goes: `zephyr.project` for your application's files, its `conf` in `prj.conf` and its `cmake` in `CMakeLists.txt` by place, and `zephyr.library` for the library's own folder, its `kconfig` the settings of other symbols, its `conf` the settings for every build and its `cmake` the module's lines. The [lib-installer README](https://github.com/nimaltd/lib-installer#for-someone-writing-a-library) has the rest.
+Each entry under `zephyr.settings` becomes a Kconfig symbol the user sets, and your code reads it as `CONFIG_<name>`. `once` lists files for the application's own folder, and `run` the steps run after the install, with the script in [`tools/make_id.py`](tools/make_id.py). What the library writes sits under where it goes: `zephyr.project` for your application's files, its `conf` in `prj.conf` and its `cmake` in `CMakeLists.txt` by place, and `zephyr.library` for the library's own folder, its `kconfig` the settings of other symbols, its `conf` the settings for every build and its `cmake` the module's lines. The [libNIMA README](https://github.com/nimaltd/libNIMA#for-someone-writing-a-library) has the rest.
 
 ---
 

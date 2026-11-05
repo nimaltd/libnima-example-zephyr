@@ -1,6 +1,6 @@
 /**
  * @file        example.c
- * @brief       A small library made to try lib-installer on: a period that never blocks.
+ * @brief       A small library made to try libNIMA on: a period that never blocks.
  * @version     1.4.0
  *
  * @author      Nima Askari (NimaLTD)

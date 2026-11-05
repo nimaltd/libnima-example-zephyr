@@ -1,15 +1,15 @@
-# Read by lib-installer. See https://github.com/nimaltd/lib-installer
+# Read by libNIMA. See https://github.com/nimaltd/libNIMA
 #
-# A library made to try the installer on, and a starting point for your own:
+# A library made to try libNIMA on, and a starting point for your own:
 # copy this file to the root of your library's repository, and change what is
 # yours. Only name and its headers or sources are required. The keys this
 # library has no use for are here too, commented out, so every one is in one
 # place.
 #
-# There is no version here. The installer reads it from the @version tag in
+# There is no version here. libNIMA reads it from the @version tag in
 # the first header listed, so the source files are the only place it is written.
 #
-# Written for 4.0.0: every file keeps the path it has here, src/example.h
+# Every file keeps the path it has here, src/example.h
 # lands at modules/example/src/example.h, and every path naming a place in
 # the application starts at the application's folder. What the library writes
 # sits under where it goes, zephyr.project for the application's own files and
@@ -17,8 +17,8 @@
 # groups under their titles, a setting with a note.
 
 name: example                      # the library's name, its folder and its Kconfig symbol
-description: A period that never blocks, made to try lib-installer on
-repository: https://github.com/nimaltd/lib-installer-example-zephyr
+description: A period that never blocks, made to try libNIMA on
+repository: https://github.com/nimaltd/libnima-example-zephyr
 license: Apache-2.0                # the licence's SPDX name
 platform: zephyr                   # the projects it is for: stm32, zephyr, esp32,
                                    # arduino and pio, one or a list of them
@@ -30,7 +30,7 @@ category: timing                   # sensor, storage, display, communication, wi
 provides: []                       # what it gives other libraries: [rtos] for an RTOS
 
 requires:
-  lib_installer: 4.0.0             # the oldest lib-installer that reads this file
+  libnima: 1.0.0                   # the oldest libNIMA that reads this file
   libraries: []                    # other libraries, installed first when missing:
                                    #   - osal >= 1.0.0       no owner means nimaltd
                                    #   - owner/lib           anyone else's
@@ -38,15 +38,14 @@ requires:
                                    #   - source: owner/other@v2.0.0
                                    #     manifest: manifests/other.yml
                                    #                         for a repository with no
-                                   #                         installer.yml of its own
+                                   #                         libnima.yml of its own
   peripherals: []                  # hardware it uses, named to the user, such as:
                                    #   - type: i2c
                                    #     note: 400 kHz
 
-# install:
-#   include_dirs: [src]            # include folders, only when the guess is wrong
-#   defines:                       # given to the whole build
-#     - EXAMPLE_FAST               # NAME, or NAME=value
+# include_dirs: [src]              # include folders, only when the guess is wrong
+# defines:                         # given to the whole build
+#   - EXAMPLE_FAST                 # NAME, or NAME=value
 
 headers:                           # .h files; the first is the one to #include
   - src/example.h                  # every file keeps its path: modules/example/src/example.h
@@ -81,13 +80,13 @@ once:                              # the application's own files, made when miss
 run:                               # steps run once the files are in, each asked first
   - label: make-id                 # the name typed after --run and --no-run
     description: Make this device's own ID, example_id.h   # shown with the question
-    script: tools/make_id.py       # Python, run with the installer's own Python: the
+    command: [python, tools/make_id.py] # Python, which has to be on the machine: the
                                    # application's tools/make_id.py, which the extra
                                    # above puts there. {library}/... is one in the library
     args: [example_id.h]           # given to the script, in the application's folder
     unless: example_id.h           # skipped when this file is there already
 
-zephyr:                            # read by lib-installer only
+zephyr:                            # read by libNIMA only
   symbol:                          # the library's switch, CONFIG_EXAMPLE=y, last in its
     EXAMPLE: builds example, and its defaults hold while it is on
                                    # block in prj.conf. The name in capitals when left
